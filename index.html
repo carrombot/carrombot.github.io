@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Final project report website for a robot / carrom themed robotics project." />
+  <title>RoboCarrom | Final Project Report</title>
+  <style>
+    :root {
+      --bg: #101316;
+      --bg-soft: #171d22;
+      --panel: rgba(255, 248, 224, 0.92);
+      --panel-dark: rgba(22, 28, 32, 0.92);
+      --ink: #192026;
+      --muted: #5f6b73;
+      --cream: #fff3cf;
+      --board: #e9c982;
+      --rail: #7f4a2a;
+      --pocket: #171717;
+      --striker: #d94d3f;
+      --coin: #f7f2df;
+      --coin-dark: #20252a;
+      --robot: #55d6ff;
+      --robot-2: #7dffba;
+      --line: rgba(25, 32, 38, 0.14);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% 12%, rgba(85, 214, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(125, 255, 186, 0.15), transparent 26%),
+        linear-gradient(135deg, #0b0d10 0%, #141a1e 44%, #24180f 100%);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,0.16) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.16) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at 50% 0%, black, transparent 78%);
+      z-index: -2;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    img, svg, iframe {
+      max-width: 100%;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 12px;
+      background: var(--cream);
+      color: var(--ink);
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      z-index: 1000;
+    }
+
+    .skip-link:focus {
+      left: 12px;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(16, 19, 22, 0.78);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 72px;
+      color: white;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.72rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, var(--striker) 0 22%, transparent 23%),
+        radial-gradient(circle at 50% 50%, var(--cream) 0 42%, transparent 43%),
+        radial-gradient(circle at 50% 50%, var(--rail) 0 67%, transparent 68%);
+      border: 2px solid rgba(255, 255, 255, 0.74);
+      box-shadow: 0 0 28px rgba(85, 214, 255, 0.24);
+      position: relative;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      top: -3px;
+      background: var(--robot);
+      border-radius: 999px;
+      box-shadow: 0 0 12px rgba(85, 214, 255, 0.8);
+    }
+
+    .brand-mark::before { left: 8px; }
+    .brand-mark::after { right: 8px; }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.35rem;
+      font-size: 0.92rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.82);
+      padding: 0.52rem 0.72rem;
+      border-radius: 999px;
+      transition: 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: white;
+      background: rgba(255, 255, 255, 0.11);
+      outline: none;
+    }
+
+    main {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      align-items: center;
+      gap: clamp(2rem, 6vw, 5rem);
+      padding: clamp(3rem, 7vw, 6rem) 0;
+      color: white;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.88);
+      border-radius: 999px;
+      padding: 0.45rem 0.72rem;
+      font-size: 0.88rem;
+      font-weight: 650;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.05;
+      margin: 0;
+      letter-spacing: -0.055em;
+    }
+
+    h1 {
+      font-size: clamp(3.25rem, 8vw, 7rem);
+      max-width: 10ch;
+    }
+
+    .hero-title-accent {
+      color: var(--robot);
+      text-shadow: 0 0 32px rgba(85, 214, 255, 0.26);
+    }
+
+    .hero-copy {
+      max-width: 64ch;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+      margin: 1.4rem 0 2rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      min-height: 46px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.82rem 1.05rem;
+      background: var(--cream);
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26);
+      outline: none;
+    }
+
+    .button.secondary {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+    }
+
+    .board {
+      width: min(100%, 520px);
+      aspect-ratio: 1 / 1;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0 8%, transparent 8.5%),
+        radial-gradient(circle at 13% 13%, var(--pocket) 0 5.7%, transparent 5.9%),
+        radial-gradient(circle at 87% 13%, var(--pocket) 0 5.7%, transparent 5.9%),
+        radial-gradient(circle at 13% 87%, var(--pocket) 0 5.7%, transparent 5.9%),
+        radial-gradient(circle at 87% 87%, var(--pocket) 0 5.7%, transparent 5.9%),
+        linear-gradient(45deg, rgba(127,74,42,0.16), transparent 35%, rgba(127,74,42,0.13)),
+        var(--board);
+      border: 24px solid var(--rail);
+      box-shadow: var(--shadow), inset 0 0 0 3px rgba(255, 255, 255, 0.16);
+      position: relative;
+      overflow: hidden;
+      transform: rotate(-2deg);
+    }
+
+    .board::before,
+    .board::after {
+      content: "";
+      position: absolute;
+      inset: 15%;
+      border: 2px solid rgba(127, 74, 42, 0.28);
+      border-radius: 22px;
+    }
+
+    .board::after {
+      inset: 29%;
+      border-radius: 50%;
+      border-style: dashed;
+    }
+
+    .coin {
+      position: absolute;
+      width: 9.8%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--coin);
+      box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1), 0 10px 18px rgba(0,0,0,0.16);
+      border: 2px solid rgba(25, 32, 38, 0.18);
+    }
+
+    .coin.dark { background: var(--coin-dark); border-color: rgba(255,255,255,0.2); }
+    .coin.red { background: var(--striker); }
+    .coin.c1 { left: 44%; top: 44%; }
+    .coin.c2 { left: 54%; top: 44%; }
+    .coin.c3 { left: 49%; top: 54%; }
+    .coin.c4 { left: 32%; top: 36%; }
+    .coin.c5 { left: 68%; top: 62%; }
+    .coin.striker { left: 43%; bottom: 13%; width: 14%; background: var(--cream); border: 5px solid var(--striker); }
+
+    .shot-line {
+      position: absolute;
+      height: 3px;
+      width: 42%;
+      left: 46%;
+      bottom: 23%;
+      background: linear-gradient(90deg, var(--robot), transparent);
+      transform-origin: left center;
+      transform: rotate(-43deg);
+      box-shadow: 0 0 18px rgba(85, 214, 255, 0.65);
+    }
+
+    .robot-arm {
+      position: absolute;
+      width: 42%;
+      height: 10%;
+      left: 29%;
+      bottom: 2%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #6c7780, #eef7ff 47%, #6c7780);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.22);
+    }
+
+    .robot-arm::before,
+    .robot-arm::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      translate: 0 -50%;
+      width: 19%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--robot);
+      border: 5px solid rgba(255,255,255,0.58);
+      box-shadow: 0 0 22px rgba(85, 214, 255, 0.7);
+    }
+
+    .robot-arm::before { left: -6%; }
+    .robot-arm::after { right: -6%; }
+
+    .floating-card {
+      position: absolute;
+      right: 0;
+      top: 8%;
+      max-width: 240px;
+      padding: 1rem;
+      border-radius: var(--radius-lg);
+      background: rgba(16, 19, 22, 0.78);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .floating-card strong {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--robot-2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.35rem;
+    }
+
+    .section {
+      margin: 0 0 1.25rem;
+      padding: clamp(1.1rem, 2.6vw, 2rem);
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      scroll-margin-top: 92px;
+    }
+
+    .section.dark {
+      background: var(--panel-dark);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.45fr);
+      gap: 1.2rem;
+      align-items: end;
+      margin-bottom: 1.4rem;
+    }
+
+    .kicker {
+      color: var(--striker);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.78rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .dark .kicker {
+      color: var(--robot-2);
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4.8vw, 4rem);
+    }
+
+    h3 {
+      font-size: clamp(1.18rem, 2vw, 1.55rem);
+      margin-bottom: 0.65rem;
+    }
+
+    .section-lede {
+      color: var(--muted);
+      margin: 0;
+      font-size: 1.02rem;
+    }
+
+    .dark .section-lede,
+    .dark .muted {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid var(--line);
+    }
+
+    .dark .card {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card p:first-child,
+    .card ul:first-child,
+    .card ol:first-child {
+      margin-top: 0;
+    }
+
+    .card p:last-child,
+    .card ul:last-child,
+    .card ol:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric {
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .metric strong {
+      font-size: 1.8rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .dark .metric span { color: rgba(255,255,255,0.68); }
+
+    .todo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.22rem 0.48rem;
+      border-radius: 999px;
+      background: rgba(217, 77, 63, 0.12);
+      color: #942d23;
+      font-weight: 800;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .dark .todo {
+      background: rgba(85, 214, 255, 0.13);
+      color: var(--robot);
+    }
+
+    .figure-placeholder {
+      min-height: 260px;
+      border-radius: var(--radius-lg);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 1.2rem;
+      border: 2px dashed rgba(25, 32, 38, 0.22);
+      background:
+        radial-gradient(circle at 25% 22%, rgba(85,214,255,0.16), transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(217,77,63,0.14), transparent 25%),
+        rgba(255,255,255,0.42);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .dark .figure-placeholder {
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.72);
+    }
+
+    .system-diagram {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.7rem;
+      align-items: stretch;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 132px;
+      border-radius: var(--radius-md);
+      padding: 1rem 0.85rem;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid var(--line);
+    }
+
+    .stage:not(:last-child)::after {
+      content: "➜";
+      position: absolute;
+      top: 50%;
+      right: -0.68rem;
+      translate: 50% -50%;
+      width: 1.45rem;
+      height: 1.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: white;
+      background: var(--striker);
+      z-index: 1;
+      font-size: 0.82rem;
+    }
+
+    .stage span {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      font-weight: 900;
+      margin-bottom: 0.65rem;
+    }
+
+    .stage strong {
+      display: block;
+      margin-bottom: 0.3rem;
+      line-height: 1.15;
+    }
+
+    .stage p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .materials-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.72rem;
+    }
+
+    .materials-list a,
+    .resource-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      text-decoration: none;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid var(--line);
+      font-weight: 800;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .materials-list a:hover,
+    .resource-link:hover {
+      transform: translateX(4px);
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .dark .materials-list a,
+    .dark .resource-link {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .dark .materials-list a:hover,
+    .dark .resource-link:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.52);
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.85rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: white;
+      background: var(--ink);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .video-shell {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(85,214,255,0.22), rgba(217,77,63,0.18)),
+        #101316;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: grid;
+      place-items: center;
+      color: white;
+      text-align: center;
+      padding: 1.4rem;
+      position: relative;
+    }
+
+    .play-button {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--cream);
+      color: var(--ink);
+      margin: 0 auto 1rem;
+      font-size: 1.8rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.3);
+    }
+
+    .team-card {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 50%, var(--robot) 0 18%, transparent 19%),
+        radial-gradient(circle at 50% 50%, var(--cream) 0 48%, var(--rail) 49% 100%);
+      color: var(--ink);
+      font-weight: 950;
+      letter-spacing: -0.06em;
+      border: 3px solid rgba(255,255,255,0.7);
+    }
+
+    .timeline {
+      counter-reset: step;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .timeline li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .timeline li::before {
+      content: counter(step);
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--striker);
+      color: white;
+      font-weight: 900;
+    }
+
+    .site-footer {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 2rem auto 0;
+      color: rgba(255,255,255,0.72);
+      padding: 2rem 0 3rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+    }
+
+    .back-to-top {
+      color: white;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .section-header {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-visual {
+        min-height: 420px;
+      }
+
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .system-diagram {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stage:nth-child(2)::after,
+      .stage:nth-child(4)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 0.85rem 0;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .nav-links a {
+        padding-left: 0;
+      }
+
+      .hero-visual {
+        min-height: 340px;
+      }
+
+      .floating-card {
+        display: none;
+      }
+
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .system-diagram {
+        grid-template-columns: 1fr;
+      }
+
+      .stage::after {
+        display: none;
+      }
+
+      h1 {
+        font-size: 3.2rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      .site-header,
+      .hero-visual,
+      .button,
+      .site-footer {
+        display: none;
+      }
+
+      main {
+        width: 100%;
+      }
+
+      .hero {
+        min-height: auto;
+        color: black;
+        padding: 1rem 0;
+      }
+
+      .section,
+      .section.dark {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        background: white;
+        color: black;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to report content</a>
+
+  <header class="site-header" id="top">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="RoboCarrom home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>RoboCarrom</span>
+      </a>
+      <div class="nav-links">
+        <a href="#introduction">Intro</a>
+        <a href="#design">Design</a>
+        <a href="#implementation">Implementation</a>
+        <a href="#results">Results</a>
+        <a href="#conclusion">Conclusion</a>
+        <a href="#team">Team</a>
+        <a href="#materials">Materials</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow" aria-label="Project metadata">
+          <span class="pill">EECS/BioE/ME C106A/206A</span>
+          <span class="pill">Spring 2026</span>
+          <span class="pill">Team <span class="todo">TODO ##</span></span>
+        </div>
+        <h1 id="page-title">Robot meets <span class="hero-title-accent">carrom.</span></h1>
+        <p class="hero-copy">
+          A final project report website for an autonomous carrom-playing robotics system. Replace this paragraph with your one-sentence project pitch: what the robot senses, plans, and physically does on the board.
+        </p>
+        <div class="cta-row">
+          <a class="button" href="#results">Watch demo / results</a>
+          <a class="button secondary" href="https://github.com/YOUR-ORG/YOUR-REPO" target="_blank" rel="noreferrer">GitHub repo ↗</a>
+          <a class="button secondary" href="https://docs.google.com/presentation/d/YOUR-SLIDES-ID" target="_blank" rel="noreferrer">Slides ↗</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Decorative carrom board with robot striker">
+        <div class="board" aria-hidden="true">
+          <span class="coin c1 red"></span>
+          <span class="coin c2 dark"></span>
+          <span class="coin c3"></span>
+          <span class="coin c4 dark"></span>
+          <span class="coin c5"></span>
+          <span class="coin striker"></span>
+          <span class="shot-line"></span>
+          <span class="robot-arm"></span>
+        </div>
+        <aside class="floating-card">
+          <strong>Pipeline</strong>
+          Camera → board state → shot planner → robot motion → striker hit
+        </aside>
+      </div>
+    </section>
+
+    <section class="section dark" aria-labelledby="snapshot-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">Project snapshot</p>
+          <h2 id="snapshot-heading">At a glance</h2>
+        </div>
+        <p class="section-lede">Use these cards as a fast summary for graders, interviewers, and teammates revisiting the project.</p>
+      </div>
+      <div class="grid four">
+        <article class="card metric">
+          <strong>TODO</strong>
+          <span>Primary task completed by the robot</span>
+        </article>
+        <article class="card metric">
+          <strong>TODO%</strong>
+          <span>Shot success rate / detection accuracy / relevant metric</span>
+        </article>
+        <article class="card metric">
+          <strong>ROS</strong>
+          <span>Replace with your stack: ROS, MoveIt, OpenCV, Python, etc.</span>
+        </article>
+        <article class="card metric">
+          <strong>Demo</strong>
+          <span>Live demo, recorded demo, or both</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="introduction" aria-labelledby="intro-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">01 · Introduction</p>
+          <h2 id="intro-heading">What we set out to build</h2>
+        </div>
+        <p class="section-lede">This section should explain the end goal, why the problem is interesting, and where the work could be useful in real robotics applications.</p>
+      </div>
+      <div class="grid three">
+        <article class="card">
+          <h3>End goal</h3>
+          <p>
+            <span class="todo">TODO</span> Describe your target behavior. Example: “Our goal was to build a robot that can identify a carrom board state, choose a feasible shot, align a striker, and execute the shot repeatably.”
+          </p>
+        </article>
+        <article class="card">
+          <h3>Why it is interesting</h3>
+          <p>
+            <span class="todo">TODO</span> Explain the hard parts: noisy perception, calibration, contact dynamics, motion planning, real hardware timing, and repeatability.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Real-world relevance</h3>
+          <p>
+            <span class="todo">TODO</span> Connect the same ideas to robotic manipulation, visual servoing, warehouse sorting, tabletop assistance, game-playing robots, or precision manufacturing.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="design" aria-labelledby="design-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">02 · Design</p>
+          <h2 id="design-heading">System design and trade-offs</h2>
+        </div>
+        <p class="section-lede">Describe what your system must do, the design you chose, the trade-offs you made, and how those choices affect robustness, durability, and efficiency.</p>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <h3>Design criteria</h3>
+          <ul>
+            <li><strong>Functional:</strong> <span class="todo">TODO</span> Detect board pieces, estimate positions, choose a shot, and execute motion.</li>
+            <li><strong>Reliable:</strong> <span class="todo">TODO</span> Work across lighting changes, board shifts, and repeated trials.</li>
+            <li><strong>Safe:</strong> <span class="todo">TODO</span> Keep motion within the board/workspace and avoid collisions.</li>
+            <li><strong>Fast enough:</strong> <span class="todo">TODO</span> Complete planning and execution within a reasonable demo time.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Chosen design</h3>
+          <p>
+            <span class="todo">TODO</span> Summarize your architecture. Example: An overhead camera estimates the carrom state, a planner ranks candidate shots, and the robot executes the selected striker pose using a calibrated board-to-robot transform.
+          </p>
+        </article>
+      </div>
+
+      <div class="card" style="margin-top: 1rem;">
+        <h3>Design flow</h3>
+        <div class="system-diagram" aria-label="System flow diagram">
+          <div class="stage">
+            <span>1</span>
+            <strong>Sense</strong>
+            <p>Capture overhead board image and robot state.</p>
+          </div>
+          <div class="stage">
+            <span>2</span>
+            <strong>Perceive</strong>
+            <p>Detect pockets, striker, coins, and board coordinates.</p>
+          </div>
+          <div class="stage">
+            <span>3</span>
+            <strong>Plan</strong>
+            <p>Score legal shots and choose a target trajectory.</p>
+          </div>
+          <div class="stage">
+            <span>4</span>
+            <strong>Control</strong>
+            <p>Convert shot geometry into robot pose and push motion.</p>
+          </div>
+          <div class="stage">
+            <span>5</span>
+            <strong>Strike</strong>
+            <p>Execute, observe outcome, and reset for the next trial.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <article class="card">
+          <h3>Trade-offs</h3>
+          <p>
+            <span class="todo">TODO</span> Compare alternatives you considered. Examples: fiducial markers vs. raw color segmentation, slow accurate pushes vs. fast strikes, precomputed shots vs. online optimization, live demo vs. recorded backup video.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Engineering impact</h3>
+          <p>
+            <span class="todo">TODO</span> Discuss how your choices affected repeatability, calibration sensitivity, durability of custom parts, robustness to noise, and runtime efficiency.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section dark" id="implementation" aria-labelledby="implementation-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">03 · Implementation</p>
+          <h2 id="implementation-heading">How the complete system works</h2>
+        </div>
+        <p class="section-lede">Document hardware, parts, software, diagrams, launch files, URDFs, and the step-by-step behavior of the full system.</p>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <h3>Hardware</h3>
+          <p><span class="todo">TODO</span> Replace with the robot, camera, board setup, end-effector/striker mechanism, mounts, and any custom hardware you built.</p>
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+        </article>
+        <article class="card">
+          <h3>Software</h3>
+          <p><span class="todo">TODO</span> Replace with your ROS nodes, OpenCV pipeline, planner, controllers, launch files, URDF changes, and calibration scripts.</p>
+          <div class="figure-placeholder">Add a software block diagram, flow chart, or ROS graph here</div>
+        </article>
+      </div>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <article class="card">
+          <h3>Parts list</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Purpose</th>
+                <th>Notes / link</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="todo">TODO</span> Robot platform</td>
+                <td>Moves striker / end-effector</td>
+                <td>Model, lab hardware, or custom build</td>
+              </tr>
+              <tr>
+                <td><span class="todo">TODO</span> Camera</td>
+                <td>Board-state perception</td>
+                <td>Resolution, mounting height, calibration method</td>
+              </tr>
+              <tr>
+                <td><span class="todo">TODO</span> End-effector</td>
+                <td>Contacts striker consistently</td>
+                <td>CAD / 3D print / materials</td>
+              </tr>
+              <tr>
+                <td><span class="todo">TODO</span> Carrom board + pieces</td>
+                <td>Test environment</td>
+                <td>Board dimensions and markers</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card">
+          <h3>System sequence</h3>
+          <ol class="timeline">
+            <li><div><strong>Initialize and calibrate.</strong><br />Load robot, camera, board geometry, and transform parameters.</div></li>
+            <li><div><strong>Detect board state.</strong><br />Segment or classify pieces, then convert pixel positions to board coordinates.</div></li>
+            <li><div><strong>Select a shot.</strong><br />Generate candidate trajectories and score them by feasibility, collision risk, and expected payoff.</div></li>
+            <li><div><strong>Move robot.</strong><br />Plan to the striker pose, execute a controlled push or strike, and retreat safely.</div></li>
+            <li><div><strong>Evaluate outcome.</strong><br />Record whether the target was pocketed, update metrics, and prepare the next trial.</div></li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="results" aria-labelledby="results-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">04 · Results</p>
+          <h2 id="results-heading">What worked</h2>
+        </div>
+        <p class="section-lede">Show how well the project worked, what tasks it performed, and include pictures plus at least one video.</p>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <h3>Demo video</h3>
+          <a class="video-shell" href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" rel="noreferrer" aria-label="Open demo video in a new tab">
+            <div>
+              <div class="play-button" aria-hidden="true">▶</div>
+              <strong>Replace with your YouTube, Drive, or hosted demo video link</strong>
+              <p class="muted">Suggested: 60–180 seconds showing perception, planning, robot motion, and final result.</p>
+            </div>
+          </a>
+        </article>
+        <article class="card">
+          <h3>Performance summary</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Task / Metric</th>
+                <th>Result</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Piece detection</td>
+                <td><span class="todo">TODO</span></td>
+                <td>Image trials, confusion cases, screenshots</td>
+              </tr>
+              <tr>
+                <td>Shot execution</td>
+                <td><span class="todo">TODO</span></td>
+                <td>Number of successful trials / attempts</td>
+              </tr>
+              <tr>
+                <td>Runtime</td>
+                <td><span class="todo">TODO</span></td>
+                <td>Planning + robot motion time</td>
+              </tr>
+              <tr>
+                <td>Robustness</td>
+                <td><span class="todo">TODO</span></td>
+                <td>Lighting, board placement, calibration drift</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+
+      <div class="grid three" style="margin-top: 1rem;">
+        <div class="figure-placeholder">Add result image 1<br />Detected board state</div>
+        <div class="figure-placeholder">Add result image 2<br />Robot executing shot</div>
+        <div class="figure-placeholder">Add result image 3<br />Final board outcome</div>
+      </div>
+    </section>
+
+    <section class="section" id="conclusion" aria-labelledby="conclusion-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">05 · Conclusion</p>
+          <h2 id="conclusion-heading">Lessons learned and next steps</h2>
+        </div>
+        <p class="section-lede">Discuss whether the finished solution met your design criteria, what difficulties you encountered, and what you would improve with more time.</p>
+      </div>
+      <div class="grid three">
+        <article class="card">
+          <h3>Did we meet the criteria?</h3>
+          <p><span class="todo">TODO</span> Compare the final behavior against your design goals from the Design section. Be specific about what worked and what did not.</p>
+        </article>
+        <article class="card">
+          <h3>Difficulties</h3>
+          <p><span class="todo">TODO</span> Mention concrete issues: calibration, friction/contact modeling, perception noise, robot reachability, motion timing, demo reliability, or hardware constraints.</p>
+        </article>
+        <article class="card">
+          <h3>Future improvements</h3>
+          <p><span class="todo">TODO</span> Add the strongest extensions: better shot physics, closed-loop visual feedback, more robust hardware, automatic reset, multi-shot planning, or learned success prediction.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section dark" id="team" aria-labelledby="team-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">06 · Team</p>
+          <h2 id="team-heading">People and contributions</h2>
+        </div>
+        <p class="section-lede">Include names, short bios, and the major contributions of each member.</p>
+      </div>
+      <div class="grid three">
+        <article class="card team-card">
+          <div class="avatar">A</div>
+          <div>
+            <h3>Team Member A</h3>
+            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
+            <p><strong>Contributions:</strong> perception pipeline, calibration, results analysis.</p>
+          </div>
+        </article>
+        <article class="card team-card">
+          <div class="avatar">B</div>
+          <div>
+            <h3>Team Member B</h3>
+            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
+            <p><strong>Contributions:</strong> robot planning, motion control, demo integration.</p>
+          </div>
+        </article>
+        <article class="card team-card">
+          <div class="avatar">C</div>
+          <div>
+            <h3>Team Member C</h3>
+            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
+            <p><strong>Contributions:</strong> hardware design, CAD, documentation, video.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="materials" aria-labelledby="materials-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">07 · Additional materials</p>
+          <h2 id="materials-heading">Code, models, videos, and data</h2>
+        </div>
+        <p class="section-lede">Link every public artifact you want graders and future interviewers to see: code, URDFs, launch files, CAD, data sheets, extra media, and raw data.</p>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Repository links</h3>
+          <ul class="materials-list">
+            <li><a href="https://github.com/YOUR-ORG/YOUR-REPO" target="_blank" rel="noreferrer"><span>Source code</span><span>↗</span></a></li>
+            <li><a href="https://github.com/YOUR-ORG/YOUR-REPO/tree/main/launch" target="_blank" rel="noreferrer"><span>Launch files</span><span>↗</span></a></li>
+            <li><a href="https://github.com/YOUR-ORG/YOUR-REPO/tree/main/urdf" target="_blank" rel="noreferrer"><span>URDF / robot description</span><span>↗</span></a></li>
+            <li><a href="https://github.com/YOUR-ORG/YOUR-REPO/tree/main/cad" target="_blank" rel="noreferrer"><span>CAD models</span><span>↗</span></a></li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>External materials</h3>
+          <ul class="materials-list">
+            <li><a href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" rel="noreferrer"><span>Main demo video</span><span>↗</span></a></li>
+            <li><a href="https://drive.google.com/drive/folders/YOUR_FOLDER_ID" target="_blank" rel="noreferrer"><span>Extra images / videos</span><span>↗</span></a></li>
+            <li><a href="assets/data/results.csv"><span>Experimental data</span><span>CSV</span></a></li>
+            <li><a href="assets/datasheets/"><span>Component data sheets</span><span>PDFs</span></a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© 2026 RoboCarrom Team · Final Project Report</span>
+    <span>Replace placeholders before publishing · <a class="back-to-top" href="#top">Back to top ↑</a></span>
+  </footer>
+
+  <script>
+    // Small progressive enhancement: mark nav links active while scrolling.
+    const sections = [...document.querySelectorAll('main section[id]')];
+    const navLinks = [...document.querySelectorAll('.nav-links a')];
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => {
+          const isActive = link.getAttribute('href') === `#${entry.target.id}`;
+          link.style.background = isActive ? 'rgba(255, 255, 255, 0.16)' : '';
+          link.style.color = isActive ? '#fff' : '';
+        });
+      });
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+</html>
