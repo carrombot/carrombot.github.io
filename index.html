@@ -924,12 +924,12 @@
         </div>
         <h1 id="page-title">Robot meets <span class="hero-title-accent">Carrom.</span></h1>
         <p class="hero-copy">
-          A final project report website for an autonomous carrom-playing robotics system. Replace this paragraph with your one-sentence project pitch: what the robot senses, plans, and physically does on the board.
+          Our final project report website for an autonomous carrom-playing robot arm.
         </p>
         <div class="cta-row">
           <a class="button" href="#results">Watch demo / results</a>
-          <a class="button secondary" href="https://github.com/YOUR-ORG/YOUR-REPO" target="_blank" rel="noreferrer">GitHub repo ↗</a>
-          <a class="button secondary" href="https://docs.google.com/presentation/d/YOUR-SLIDES-ID" target="_blank" rel="noreferrer">Slides ↗</a>
+          <a class="button secondary" href="https://github.com/arijit-ghoshal/carrom-2026" target="_blank" rel="noreferrer">GitHub repo ↗</a>
+          <a class="button secondary" href="https://docs.google.com/presentation/d/1d4AwF4A213Eh1Z019-jNvslztlCRdNIq1DexyFVtT3w/edit?usp=sharing" target="_blank" rel="noreferrer">Slides ↗</a>
         </div>
       </div>
 
@@ -951,7 +951,7 @@
       </div>
     </section>
 
-    <section class="section dark" aria-labelledby="snapshot-heading">
+    <!-- <section class="section dark" aria-labelledby="snapshot-heading">
       <div class="section-header">
         <div>
           <p class="kicker">Project snapshot</p>
@@ -977,7 +977,7 @@
           <span>Live demo, recorded demo, or both</span>
         </article>
       </div>
-    </section>
+    </section> -->
 
     <section class="section" id="explaination" aria-labelledby="intro-heading">
   <div class="section-header" style="display: flex; align-items: center; gap: 40px; flex-wrap: wrap;">
@@ -1033,11 +1033,11 @@
             </ul>
         </article>
         <article class="card">
-          <h3>Why it is interesting</h3>
-            <p>Our Carrombot project is an interesting project because of its combination of perception, planning and control.</p>
-            <p>The computer vision and the homography used to analyze the board and estimate the positions and angles of shot allow the robot to map real-world piece locations.</p>
-            <p>This is interesting because of Carrombots' possible application to real-world problems.</p>
-        </article>
+          <h3>Why It Is Interesting</h3>
+<p>Carrombot is interesting because it combines robotics with a familiar everyday game, creating a clear way to test different strategies in a verifiable manner.</p>
+<p>Since each shot has a visible result, we can evaluate how well the robot’s vision, planning, and control systems work together.</p>
+<p>This makes the project both practical and easy to understand, while still involving important robotics concepts.</p>
+</article>
       </div>
     </section>
 
@@ -1159,6 +1159,7 @@
           <li>When the Arduino receives a pulse-duration command from the main computer over USB serial, it sets the control pin high for the requested duration. This turns on the MOSFET, allowing current from the 12V supply to flow through the solenoid and actuate it. After the pulse time expires, the Arduino sets the pin low, turning the solenoid off.</li>
           <li>A flyback diode is connected across the solenoid terminals to protect the MOSFET and control electronics from the voltage spike generated when the solenoid is switched off.</li>
           <li>The Arduino is connected to the workstation via USB, allowing the robot-side software to send shot commands as serial messages specifying the desired pulse length.</li>
+          <li>Connections are secured using WAGO connectors, screw terminals, and soldered joints for improved reliability.</li>
         </ul>
       </article>
   </div>
@@ -1862,20 +1863,34 @@
         </div>
         <p class="section-lede">Discuss whether the finished solution met your design criteria, what difficulties you encountered, and what you would improve with more time.</p>
       </div>
-      <div class="grid three">
-        <article class="card">
-          <h3>Did we meet the criteria?</h3>
-          <p><span class="todo">TODO</span> Compare the final behavior against your design goals from the Design section. Be specific about what worked and what did not.</p>
-        </article>
-        <article class="card">
-          <h3>Difficulties</h3>
-          <p><span class="todo">TODO</span> Mention concrete issues: calibration, friction/contact modeling, perception noise, robot reachability, motion timing, demo reliability, or hardware constraints.</p>
-        </article>
-        <article class="card">
-          <h3>Future improvements</h3>
-          <p><span class="todo">TODO</span> Add the strongest extensions: better shot physics, closed-loop visual feedback, more robust hardware, automatic reset, multi-shot planning, or learned success prediction.</p>
-        </article>
-      </div>
+<div class="grid three">
+  <article class="card">
+    <h3>Did We Meet the Criteria?</h3>
+    <p>We met the main project criteria described above. Our prototype was able to detect the board, identify shot information, communicate with the Arduino, and actuate the striker using the solenoid system.</p>
+
+    <p>However, we also had some more ambitious goals that we were not able to fully complete. We originally planned to include more advanced strategy code for the robot, including physics-based shot simulation, but the model was difficult to make accurate enough for reliable real-world shots.</p>
+
+    <p>Overall, the system worked well as a prototype, even though it was not as polished or complete as we originally imagined.</p>
+  </article>
+
+  <article class="card">
+    <h3>Difficulties</h3>
+    <p>One major difficulty was dealing with real-world error. Small amounts of noise in the camera detection, homography, robot positioning, and solenoid timing could build up throughout the control loop and cause the final striker position to be slightly off.</p>
+
+    <p>We also had hardware and setup limitations. The classroom was too small for a full-size Carrom board, so we tested on a smaller setup. We also had to modify the striker to make it taller, which helped the robot hit it more reliably but was not fully true to the actual game.</p>
+
+    <p>Another challenge was modeling the physics of the shots. Friction, contact between pieces, and small changes in force made it hard to predict exactly where the pieces would go after each shot.</p>
+  </article>
+
+  <article class="card">
+    <h3>Future Improvements</h3>
+    <p>In the future, we would want to improve the strategy system by adding better shot physics, more reliable success prediction, and possibly multi-shot planning. This would allow the robot to choose shots more intelligently instead of only relying on simpler calculations.</p>
+
+    <p>We would also want to add closed-loop feedback, such as using the camera to check the robot and striker position before taking a shot. A controller could help reduce error buildup and make the robot’s movements more accurate.</p>
+
+    <p>On the hardware side, we would improve wire management, add a circuit enclosure, and use a stronger or more consistent solenoid. These changes would make the setup more reliable, safer, and more polished.</p>
+  </article>
+</div>
     </section>
 
     <section class="section dark" id="team" aria-labelledby="team-heading">
@@ -1890,8 +1905,8 @@
           <div class="avatar">A</div>
           <div>
             <h3>Arijit Ghoshal</h3>
-            <p>I'm a fourth-year math and computer science double major.</p>
-            <p><strong>Contributions:</strong> Software pipeline, including homography methods, Hough circles-based piece identification, physics methods and strategy, structuring of, software and results components of report</p>
+            <p>I'm a fourth-year Math and Computer Science double major.</p>
+            <p><strong>Contributions:</strong> Software pipeline, including homography methods, Hough circles-based piece identification, physics methods and strategy, structuring of software and results components of report</p>
           </div>
         </article>
         <article class="card team-card">
@@ -1899,7 +1914,7 @@
           <div>
             <h3>Lauren Halenkamp</h3>
             <p>I am a third-year Computer Science Major with a background in Mechanical Engineering and Circuits.</p>
-            <p><strong>Contributions:</strong>CAD Design, Modeling and printing. Assistance on hardware circuitry, actuation, and physical board contributions. Presentation slides, image and video documentation, Hardware, Design and Intro components of report.</p>
+            <p><strong>Contributions:</strong> CAD Design, Modeling and printing. Assistance on hardware circuitry, actuation, and physical board contributions. Presentation slides, image and video documentation, Hardware, Design and Intro components of report.</p>
           </div>
         </article>
       </div>
@@ -1907,17 +1922,17 @@
         <article class="card team-card">
           <div class="avatar">A</div>
           <div>
-            <h3>Someone</h3>
-            <p></p>
-            <p><strong>Contributions:</strong></p>
+            <h3>Sara Kofman</h3>
+            <p>I'm a fourth-year Math and Computer Science double major with a Mechanical Engineering minor.</p>
+            <p><strong>Contributions:</strong> Design and assembly of the solenoid circuit, Arduino communication code, assistance on physical setup, part sourcing. </p>
           </div>
         </article>
         <article class="card team-card">
           <div class="avatar">B</div>
           <div>
-            <h3>Team Member B</h3>
-            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
-            <p><strong>Contributions:</strong> robot planning, motion control, demo integration.</p>
+            <h3>Isha Khandwala</h3>
+            <p>I'm a fourth-year Math and Computer Science double major.</p>
+            <p><strong>Contributions:</strong> Game logic, fine tuning camera vision, motion planning, software/hardware integration. Assisted in software and strategy design.</p>
           </div>
         </article>
       </div>
