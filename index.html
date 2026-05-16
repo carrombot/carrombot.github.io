@@ -796,6 +796,19 @@
       text-decoration: none;
     }
 
+    .desmos-container {
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      margin: auto;
+    }
+
+    .desmos-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #ccc;
+    }
+
     @media (max-width: 980px) {
       .hero,
       .section-header {
@@ -1694,6 +1707,18 @@
             <img src="images/image_2_5.jpg" alt="Image 2" class="figure-image" />
           </div>
           
+          Below is an interactive Desmos-based simulation for direct shots that we wrote
+          in order to get a better idea about the geometry of these backward shots. This was one
+          of the first things we worked on for this project and contains the math for elastic collisions,
+          trajectory tracing, and feasible region estimation.
+          The full Desmos plot is at https://www.desmos.com/calculator/o9s8af839v.
+
+          <div class="desmos-container">
+            <iframe
+              src="https://www.desmos.com/calculator/o9s8af839v?embed"
+              frameborder="0">
+            </iframe>
+          </div>
 
           <h5>2. Heuristics</h5>
 
