@@ -905,7 +905,6 @@
       <div class="nav-links">
         <a href="#introduction">Intro</a>
         <a href="#design">Design</a>
-        <a href="#implementation">Implementation</a>
         <a href="#hardware">Hardware</a>
         <a href="#software">Software</a>
         <a href="#results">Results</a>
@@ -1116,84 +1115,12 @@
       </div>
     </section>
 
-    <section class="section dark" id="implementation" aria-labelledby="implementation-heading">
-      <div class="section-header">
-        <div>
-          <p class="kicker">03 · Implementation</p>
-          <h2 id="implementation-heading">How the complete system works</h2>
-        </div>
-        <p class="section-lede">Document hardware, parts, software, diagrams, launch files, URDFs, and the step-by-step behavior of the full system.</p>
-      </div>
-
-      <div class="grid two">
-        <article class="card">
-          <h3>Hardware</h3>
-          <p><span class="todo">TODO</span> Replace with the robot, camera, board setup, end-effector/striker mechanism, mounts, and any custom hardware you built.</p>
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
-        </article>
-        <article class="card">
-          <h3>Software</h3>
-          <p><span class="todo">TODO</span> Replace with your ROS nodes, OpenCV pipeline, planner, controllers, launch files, URDF changes, and calibration scripts.</p>
-          <div class="figure-placeholder">Add a software block diagram, flow chart, or ROS graph here</div>
-        </article>
-      </div>
-
-      <div class="grid two" style="margin-top: 1rem;">
-        <article class="card">
-          <h3>Parts list</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Part</th>
-                <th>Purpose</th>
-                <th>Notes / link</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="todo">TODO</span> Robot platform</td>
-                <td>Moves striker / end-effector</td>
-                <td>Model, lab hardware, or custom build</td>
-              </tr>
-              <tr>
-                <td><span class="todo">TODO</span> Camera</td>
-                <td>Board-state perception</td>
-                <td>Resolution, mounting height, calibration method</td>
-              </tr>
-              <tr>
-                <td><span class="todo">TODO</span> End-effector</td>
-                <td>Contacts striker consistently</td>
-                <td>CAD / 3D print / materials</td>
-              </tr>
-              <tr>
-                <td><span class="todo">TODO</span> Carrom board + pieces</td>
-                <td>Test environment</td>
-                <td>Board dimensions and markers</td>
-              </tr>
-            </tbody>
-          </table>
-        </article>
-
-        <article class="card">
-          <h3>System sequence</h3>
-          <ol class="timeline">
-            <li><div><strong>Initialize and calibrate.</strong><br />Load robot, camera, board geometry, and transform parameters.</div></li>
-            <li><div><strong>Detect board state.</strong><br />Segment or classify pieces, then convert pixel positions to board coordinates.</div></li>
-            <li><div><strong>Select a shot.</strong><br />Generate candidate trajectories and score them by feasibility, collision risk, and expected payoff.</div></li>
-            <li><div><strong>Move robot.</strong><br />Plan to the striker pose, execute a controlled push or strike, and retreat safely.</div></li>
-            <li><div><strong>Evaluate outcome.</strong><br />Record whether the target was pocketed, update metrics, and prepare the next trial.</div></li>
-          </ol>
-        </article>
-      </div>
-    </section>
-
     <section class="section" id="hardware" aria-labelledby="hardware-heading">
   <div class="section-header">
     <div>
-      <p class="kicker">04 · Hardware / Physical Setup</p>
+      <p class="kicker">03 · Hardware / Physical Setup</p>
     </div>
   </div>
-  <br></br>
   <h2>Hardware</h2>
   <br></br>
 
@@ -1275,7 +1202,7 @@
     <section class="section dark" id="software" aria-labelledby="software-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">05 · Software</p>
+          <p class="kicker">04 · Software</p>
           <h2 id="software-heading">Breakdown of Software Pipeline</h2>
         </div>
         <p class="section-lede"></p>
@@ -1875,10 +1802,11 @@
     <section class="section" id="results" aria-labelledby="results-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">06 · Results</p>
+          <p class="kicker">05 · Results</p>
           <h2 id="results-heading">Results</h2>
         </div>
-        <p class="section-lede">Show how well the project worked, what tasks it performed, and include pictures plus at least one video.</p>
+        <p class="section-lede">This project demonstrates how converting camera data using computer vision to percieve a real-world environment, can be used to understand object positions. It also demonstrates strong motion planing with the systems shot selection by analyzing geometric relationships between the striker, pieces and pockets. Then after collecting that data, it converts to real qorld transform for the UR7e arm.</p>
+        <p class="section-lede"> In terms of hardware, it shows mechanical cohesion between ROS2 and our Arudino Chip to control the solenoid system with a custom single coordinated system.</p>
       </div>
 
       <div class="grid two">
@@ -1887,7 +1815,6 @@
           <a class="video-shell" href="https://youtu.be/CL-KuPaDHxg" target="_blank" rel="noreferrer" aria-label="Open demo video in a new tab">
             <div>
               <div class="play-button" aria-hidden="true">▶</div>
-              <p class="muted">Suggested: 60–180 seconds showing perception, planning, robot motion, and final result.</p>
             </div>
           </a>
         </article>
@@ -1898,46 +1825,39 @@
               <tr>
                 <th>Task / Metric</th>
                 <th>Result</th>
-                <th>Evidence</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Piece detection</td>
-                <td><span class="todo">TODO</span></td>
+                <td>Based on piece color, very accurate, dark colored/ black pieces are always detected.</td>
                 <td>Image trials, confusion cases, screenshots</td>
               </tr>
               <tr>
                 <td>Shot execution</td>
-                <td><span class="todo">TODO</span></td>
+                <td>The connection between ROS2 and the Arduino never failed, alwlays consistent. Piece accuracy is accurate 50% of the time, small factors like piece placement on the baseline lead to wrong trials.</td>
                 <td>Number of successful trials / attempts</td>
               </tr>
               <tr>
                 <td>Runtime</td>
-                <td><span class="todo">TODO</span></td>
+                <td>Consistent between trials, if was longer than expected then image was obstructed.</td>
                 <td>Planning + robot motion time</td>
               </tr>
               <tr>
                 <td>Robustness</td>
-                <td><span class="todo">TODO</span></td>
-                <td>Lighting, board placement, calibration drift</td>
+                <td>Doing a check before trials, trials were more consistent and gave better results.</td>
+                <td>Lighting, board placement, calibration drift, AruCo Tag placement</td>
               </tr>
             </tbody>
           </table>
         </article>
-      </div>
-
-      <div class="grid three" style="margin-top: 1rem;">
-        <div class="figure-placeholder">Add result image 1<br />Detected board state</div>
-        <div class="figure-placeholder">Add result image 2<br />Robot executing shot</div>
-        <div class="figure-placeholder">Add result image 3<br />Final board outcome</div>
       </div>
     </section>
 
     <section class="section" id="conclusion" aria-labelledby="conclusion-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">07 · Conclusion</p>
+          <p class="kicker">06 · Conclusion</p>
           <h2 id="conclusion-heading">Lessons learned and next steps</h2>
         </div>
         <p class="section-lede">Discuss whether the finished solution met your design criteria, what difficulties you encountered, and what you would improve with more time.</p>
@@ -1964,7 +1884,6 @@
           <p class="kicker">06 · Team</p>
           <h2 id="team-heading">People and contributions</h2>
         </div>
-        <p class="section-lede">Include names, short bios, and the major contributions of each member.</p>
       </div>
       <div class="grid two">
         <article class="card team-card">
@@ -1978,9 +1897,9 @@
         <article class="card team-card">
           <div class="avatar">B</div>
           <div>
-            <h3>Team Member B</h3>
-            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
-            <p><strong>Contributions:</strong> robot planning, motion control, demo integration.</p>
+            <h3>Lauren Halenkamp</h3>
+            <p>I am a third-year computer science major with a background in Mechanical Engineering and Circuits.</p>
+            <p><strong>Contributions:</strong>CAD Design, Modeling and printing. Assistance on hardware circuitry, actuation, and physical board contributions. Presentation slides, image and video documentation, Hardware, Design and Intro compnents of report.</p>
           </div>
         </article>
       </div>
