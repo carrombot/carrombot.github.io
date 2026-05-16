@@ -269,6 +269,33 @@
       place-items: center;
     }
 
+    
+
+    .figure-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .figure-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .figure-image {
+      width: 32%;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .figure-caption {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: #bfbfbf;
+      font-style: italic;
+    }
+
     .board {
       width: min(100%, 520px);
       aspect-ratio: 1 / 1;
@@ -1214,7 +1241,7 @@
             allowing the system to continuously maintain state information throughout
             execution.
           </p>
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          
         </article>
       </div>
 
@@ -1277,7 +1304,19 @@
             shot execution.
           </p>
           
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          <div class="figure-container">
+            <div class="figure-row">
+              <img
+                src="images/aruco_homography.jpg"
+                alt="ArUco homography visualization"
+                class="figure-image"
+              />
+            </div>
+          
+            <p class="figure-caption">
+              Example output of the ArUco tag-based homography, expanded to show the rectified tag. <br />Most homographies were more skewed than this one.
+            </p>
+          </div>
           
           <h5>1b. Board-Based Homography</h5>
           
@@ -1329,8 +1368,34 @@
             background, allowing the thresholding pipeline to identify the board contour
             more reliably.
           </p>
+
+          <p>
+            Below are three examples of the board homography pipeline. For each example, we've included the original image, thresholded image, detected edges, and rectified board.
+          </p>
           
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          <div class="figure-row">
+            <img src="images/image_1_0.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_0.jpg" alt="Image 2" class="figure-image" />
+            <img src="images/image_3_0.jpg" alt="Image 3" class="figure-image" />
+          </div>
+
+          <div class="figure-row">
+            <img src="images/image_1_1.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_1.jpg" alt="Image 2" class="figure-image" />
+            <img src="images/image_3_1.jpg" alt="Image 3" class="figure-image" />
+          </div>
+
+          <div class="figure-row">
+            <img src="images/image_1_2.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_2.jpg" alt="Image 2" class="figure-image" />
+            <img src="images/image_3_2.jpg" alt="Image 3" class="figure-image" />
+          </div>
+
+          <div class="figure-row">
+            <img src="images/image_1_3.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_3.jpg" alt="Image 2" class="figure-image" />
+            <img src="images/image_3_3.jpg" alt="Image 3" class="figure-image" />
+          </div>
           
           <h4>2. Piece Detection</h4>
           
@@ -1365,8 +1430,16 @@
             they were visually similar to the cue circles printed on the board. Due to
             this ambiguity, we ultimately excluded red coins from the system.
           </p>
+
+          <p>
+            Below are the same examples from before, now with pieces detected.
+          </p>
           
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          <div class="figure-row">
+            <img src="images/image_1_4.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_4.jpg" alt="Image 2" class="figure-image" />
+            <img src="images/image_3_4.jpg" alt="Image 3" class="figure-image" />
+          </div>
           
           <h4>3. Point Cloud Detection</h4>
           
@@ -1566,7 +1639,15 @@
             velocity.
           </p>
 
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          <p>
+            Below are two examples of boards where direct shots were calculated.
+          </p>
+          
+          <div class="figure-row">
+            <img src="images/image_1_5.jpg" alt="Image 1" class="figure-image" />
+            <img src="images/image_2_5.jpg" alt="Image 2" class="figure-image" />
+          </div>
+          
 
           <h5>2. Heuristics</h5>
 
@@ -1579,7 +1660,13 @@
             future turns.
           </p>
 
-          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          <p>
+            Below is an example of a board where the heuristic shot would be used.
+          </p>
+          
+          <div class="figure-row">
+            <img src="images/image_3_5.jpg" alt="Image 1" class="figure-image" />
+          </div>
 
           <h5>3. Forward Simulation Algorithm</h5>
 
@@ -1624,7 +1711,24 @@
           </p>
         </article>
       </div>
-
+      <div class="grid one">
+        <h3>Robot Actuation</h3>
+        <article class="card">
+          <p>The actuation subsystem was responsible for translating planned shots into physical robot motion using the UR7e robotic arm and the custom solenoid striker mechanism. Our pipeline combined predefined robot configurations, inverse kinematics-based motion planning, and actuator control. We hard-coded the joint states for two important robot poses: the “Home” pose, from which the robot could see the full board, and the “Medium” pose, used as an intermediate configuration to transition between picking up and placing the striker without hitting other coins.</p>
+  
+          <p>For interactions involving the striker itself, we used computed world-space coordinates provided by the vision pipeline and then used MoveIt’s inverse kinematics and motion planning modules to compute feasible arm trajectories to the target poses. We considered implementing PID-based control, but because the task did not require fine-grained velocity regulation and there was low error in the arm’s final position, we did not use it.</p>
+          
+          <p>We encountered issues with MoveIt’s IK-based motion planning, which sometimes generated unintuitive trajectories involving excessive joint rotations or failed to plan a trajectory altogether. We resolved this issue by positioning the carrom board farther from the robot base so that all target poses lay within the arm’s reachable workspace, but in future work, we could set waypoints along a linear trajectory or require that wrist joint angles remain constant.</p>
+          
+          <p>We hit the striker using the solenoid actuator mounted behind the robot gripper, which was controlled through an Arduino microcontroller connected to the main ROS2 system.
+            The arduino waited for a message containing a pulse time from the COM channel and activated a GPIO pin for the corresponding number of seconds to set off the solenoid striker.
+            After placing the striker on the board, we used inverse kinematics to move the wrist slightly forward in the tool frame, allowing the actuator surface to make contact with the striker. During development, we experimentally determined a linear relationship between actuator pulse length and resulting striker speed by recording striker motion from an overhead camera in slow motion while varying the pulse duration. However, in our final implementation, we did not include varying pulse lengths as a way to reduce complexity during testing.
+          </p>
+      
+        </article>
+        
+      </div>
+    </section>
 
     <section class="section" id="results" aria-labelledby="results-heading">
       <div class="section-header">
