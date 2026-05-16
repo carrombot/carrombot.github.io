@@ -718,7 +718,7 @@
       gap: 0.75rem;
     }
 
-    /* .avatar {
+    .avatar {
       width: 72px;
       height: 72px;
       border-radius: 50%;
@@ -731,22 +731,6 @@
       font-weight: 950;
       letter-spacing: -0.06em;
       border: 3px solid rgba(255,255,255,0.7);
-    } */
-    .avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      overflow: hidden;           /* clips the image to the circle */
-      border: 3px solid rgba(255,255,255,0.7);
-      /* remove the background, display:grid, place-items, color, font-weight, letter-spacing */
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;          /* fills the circle without stretching */
-      object-position: center;   /* centers the crop — adjust if needed */
-      display: block;
     }
 
     .timeline {
@@ -991,12 +975,14 @@
         <p class="kicker">00 · Carrom</p>
         <h2 id="intro-heading">What is Carrom?</h2>
       </div>
+      <p></p>
       <p class="section-lede">Carrom is a tabletop game of Indian origin that is regularly described as a mix of shuffleboard and billiards.</p>
       <p class="section-lede">Players use their fingers to strike the “Striker” piece into smaller wooden discs with the goal of knocking it into one of the corner pockets.</p>
       <p class="section-lede">The player must strike the Striker from the baseline closest to the player. The baseline is marked on our board with two consecutive black lines.</p>
+      <p class="section-lede">Click <a href="https://www.youtube.com/watch?v=3frOMQFPY3E" target="_blank">HERE</a> to watch a short How-to-Play video (credit: Animation Builders).</p>
     </div>
     <img 
-      src="images/images.jpeg" 
+      src="images/carrom-rules-1.webp.avif" 
       alt="Carrom Board"
       style="
         width: 340px;
@@ -1049,23 +1035,22 @@
           <p class="kicker">02 · Design</p>
           <h2 id="design-heading">System design and trade-offs</h2>
         </div>
-        <p class="section-lede">Describe what your system must do, the design you chose, the trade-offs you made, and how those choices affect robustness, durability, and efficiency.</p>
       </div>
 
       <div class="grid two">
         <article class="card">
           <h3>Design criteria</h3>
           <ul>
-            <li><strong>Functional:</strong> <span class="todo">TODO</span> Detect board pieces, estimate positions, choose a shot, and execute motion.</li>
-            <li><strong>Reliable:</strong> <span class="todo">TODO</span> Work across lighting changes, board shifts, and repeated trials.</li>
-            <li><strong>Safe:</strong> <span class="todo">TODO</span> Keep motion within the board/workspace and avoid collisions.</li>
-            <li><strong>Fast enough:</strong> <span class="todo">TODO</span> Complete planning and execution within a reasonable demo time.</li>
+            <li><strong>Functional:</strong> Detect board pieces, estimate positions, choose a shot, and execute motion.</li>
+            <li><strong>Reliable:</strong> Work across lighting changes, board shifts, changing board frictions and repeated trials.</li>
+            <li><strong>Safe:</strong> Keep motion within the board/workspace and avoid collisions.</li>
+            <li><strong>Fast enough:</strong> Complete planning and execution within a reasonable demo time.</li>
           </ul>
         </article>
         <article class="card">
           <h3>Chosen design</h3>
           <p>
-            <span class="todo">TODO</span> Summarize your architecture. Example: An overhead camera estimates the carrom state, a planner ranks candidate shots, and the robot executes the selected striker pose using a calibrated board-to-robot transform.
+            Our chosen design, given a tall enough striker piece, allows for our solenoid and CAD Box to hover above the board. The height is designed to be the same as that of the side bumpers so no pieces will be affected by the CAD Box or the striker.
           </p>
         </article>
       </div>
@@ -1081,7 +1066,7 @@
           <div class="stage">
             <span>2</span>
             <strong>Perceive</strong>
-            <p>Detect pockets, striker, coins, and board coordinates.</p>
+            <p>Detect pockets, striker, coins, and board coordinates with the help of an AruCo Tag.</p>
           </div>
           <div class="stage">
             <span>3</span>
@@ -1091,12 +1076,12 @@
           <div class="stage">
             <span>4</span>
             <strong>Control</strong>
-            <p>Convert shot geometry into robot pose and push motion.</p>
+            <p>Convert shot geometry into robot pose and push motion using inverse kinematics.</p>
           </div>
           <div class="stage">
             <span>5</span>
             <strong>Strike</strong>
-            <p>Execute, observe outcome, and reset for the next trial.</p>
+            <p>Activate the solenoid aka striking, observe outcome, and reset for the next turn.</p>
           </div>
         </div>
       </div>
@@ -1105,13 +1090,13 @@
         <article class="card">
           <h3>Trade-offs</h3>
           <p>
-            <span class="todo">TODO</span> Compare alternatives you considered. Examples: fiducial markers vs. raw color segmentation, slow accurate pushes vs. fast strikes, precomputed shots vs. online optimization, live demo vs. recorded backup video.
+            Since the design of the CAD Box is a certain length, the striker must be tall enough to clear the height of the side bumpers without piece interference.  
           </p>
         </article>
         <article class="card">
           <h3>Engineering impact</h3>
           <p>
-            <span class="todo">TODO</span> Discuss how your choices affected repeatability, calibration sensitivity, durability of custom parts, robustness to noise, and runtime efficiency.
+           The choices we made in terms of design allow for strong repeartability with strong part durability of our custom parts and clean runtime efficiency.
           </p>
         </article>
       </div>
@@ -1188,10 +1173,84 @@
       </div>
     </section>
 
+    <section class="section" id="hardware" aria-labelledby="hardware-heading">
+  <div class="section-header">
+    <div>
+      <p class="kicker">04 · Hardware / Physical Setup</p>
+    </div>
+  </div>
+
+  <div class="grid six">
+    <article class="card metric">
+      <strong>UR7e</strong>
+      <span>Lab-owned collaborative robotic arm used for striker positioning and shot execution. The RealSense Camera and CAD Box are fixed to the wrist joint of the arm.</span>
+    </article>
+
+    <article class="card metric">
+      <strong>RealSense</strong>
+      <span>Depth camera used to capture board state and find piece positions before each turn.</span>
+    </article>
+
+    <article class="card metric">
+      <strong>Solenoid</strong>
+      <span>Actuation mechanism mounted behind the gripper to deliver consistent striker force.</span>
+      <span>A small impact plate is attached to the solenoid plunger so the solenoid can transfer force to the carrom striker more effectively.
+      The plate is epoxied to a hex nut, and the nut is threaded onto the solenoid screw/plunger tip.</span>
+    </article>
+
+    <article class="card metric">
+      <strong>Arduino</strong>
+      <span>Connected through ROS2, sends pulses to solenoid through the MOSFET</span>
+    </article>
+
+    <article class="card metric">
+      <strong>MOSFET</strong>
+      <span>Allows the low-power Arduino to control higher-powered Solenoid</span>
+    </article>
+    
+    <article class="card metric">
+      <strong>Board Setup</strong>
+      <span>Aruco tag pasted on cardboard that was taped to the bottom-left corner of board (issues with painting on board not being perfectly symmetrical). Ended up using a 7x7 centimeter tag.</span>
+      <span>The striker had to be made tall so that it could be hit by the solenoid actuator. We also used this for point cloud detection of the striker in lieu of correct vision-based striker detection.</span>
+    </article>
+  </div>
+      
+  <div class="grid one">
+      <article class="card">
+        <h2>CAD Box Design</h2>
+        <p>The CAD Box Design’s main purpose is to support and hold the solenoid. After experimenting with using the grippers as a way to “flick” or strike the striker directly, we realized we would not be able to achieve the needed velocity for the striker to move as required. We then explored the option to use a solenoid to strike the striker. To do this, we still needed full functionality of the grippers, therefore nothing could obstruct their path. With this in mind we repositioned the solenoid so it sits directly behind the grippers. As a result, the rotation of the wrist joint was also simplified so further computation to determine the rotational angle was not needed. To make the Box Design attachable and detachable, we used a bracket system with nuts and bots to be able to fix the box to the wrist of the UR7e arm. To make cable management clean and not affect the board or its pieces, we added compartments and holes to allow wires to run through the box.</p>
+        <div style="display: flex; gap: 15px; margin-top: 20px; justify-content: center; flex-wrap: wrap;">
+          <img src="images/design2_1.png" alt="CAD Design 1"
+          style="width: 100%; max-width: 250px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); object-fit: cover;">
+          <img src="images/design1.png" alt="CAD Design 2"
+            style="width: 100%; max-width: 250px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); object-fit: cover;">
+          <img src="images/cad1.jpg" alt="CAD Design 3"
+            style="width: 100%; max-width: 250px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); object-fit: cover;">
+          <img src="images/cad2.png" alt="CAD Design 4"
+            style="width: 100%; max-width: 250px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); object-fit: cover;">
+        </div>
+      </article>
+  </div>
+
+  <div class="grid one">
+      <article class="card">
+        <h2>Electronics:</h2>
+        <ul>
+          <li>The Arduino powers the solenoid indirectly by sending a control signal to a MOSFET driver module. The Arduino output pin is connected to the MOSFET module’s TRIG/PWM input, and the Arduino ground is connected to the module ground.</li>
+          <li>A separate 12V DC power supply provides the actual power for the solenoid. The supply is connected to the MOSFET module input terminals, and the solenoid is connected to the MOSFET module output terminals.</li>
+          <li>When the Arduino receives a pulse-duration command from the main computer over USB serial, it sets the control pin high for the requested duration. This turns on the MOSFET, allowing current from the 12V supply to flow through the solenoid and actuate it. After the pulse time expires, the Arduino sets the pin low, turning the solenoid off.</li>
+          <li>A flyback diode is connected across the solenoid terminals to protect the MOSFET and control electronics from the voltage spike generated when the solenoid is switched off.</li>
+          <li>The Arduino is connected to the workstation via USB, allowing the robot-side software to send shot commands as serial messages specifying the desired pulse length.</li>
+        </ul>
+      </article>
+  </div>
+</section>
+
+
     <section class="section dark" id="software" aria-labelledby="software-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">04 · Software</p>
+          <p class="kicker">05 · Software</p>
           <h2 id="software-heading">Breakdown of Software Pipeline</h2>
         </div>
         <p class="section-lede"></p>
@@ -1779,7 +1838,7 @@
     <section class="section" id="results" aria-labelledby="results-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">04 · Results</p>
+          <p class="kicker">06 · Results</p>
           <h2 id="results-heading">Results</h2>
         </div>
         <p class="section-lede">Show how well the project worked, what tasks it performed, and include pictures plus at least one video.</p>
@@ -1788,10 +1847,9 @@
       <div class="grid two">
         <article class="card">
           <h3>Demo video</h3>
-          <a class="video-shell" href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" rel="noreferrer" aria-label="Open demo video in a new tab">
+          <a class="video-shell" href="https://youtu.be/CL-KuPaDHxg" target="_blank" rel="noreferrer" aria-label="Open demo video in a new tab">
             <div>
               <div class="play-button" aria-hidden="true">▶</div>
-              <strong>Replace with your YouTube, Drive, or hosted demo video link</strong>
               <p class="muted">Suggested: 60–180 seconds showing perception, planning, robot motion, and final result.</p>
             </div>
           </a>
@@ -1842,7 +1900,7 @@
     <section class="section" id="conclusion" aria-labelledby="conclusion-heading">
       <div class="section-header">
         <div>
-          <p class="kicker">05 · Conclusion</p>
+          <p class="kicker">07 · Conclusion</p>
           <h2 id="conclusion-heading">Lessons learned and next steps</h2>
         </div>
         <p class="section-lede">Discuss whether the finished solution met your design criteria, what difficulties you encountered, and what you would improve with more time.</p>
@@ -1873,15 +1931,11 @@
       </div>
       <div class="grid two">
         <article class="card team-card">
-          <div class="avatar"> <img src="images/arijit.jpg" alt="Arijit Ghoshal" /></div>
+          <div class="avatar">A</div>
           <div>
             <h3>Arijit Ghoshal</h3>
-            <p>
-              I'm a fourth-year math and computer science double major who loves the outdoors and science fiction.
-            </p>
-            <p>
-              <strong>Contributions:</strong> Software pipeline (including homography methods and Hough circles-based piece identification), physics and strategy methods, board and game state design, main callback function and robot movement jobs, modifications to point cloud detection, software and results components of report.
-            </p>
+            <p>I'm a fourth-year math and computer science double major.</p>
+            <p><strong>Contributions:</strong> Software pipeline, including homography methods, Hough circles-based piece identification, physics methods and strategy, structuring of, software and results components of report</p>
           </div>
         </article>
         <article class="card team-card">
