@@ -926,7 +926,7 @@
           <span class="pill">Spring 2026</span>
           <span class="pill">Team 20</span></span>
         </div>
-        <h1 id="page-title">Robot meets <span class="hero-title-accent">carrom.</span></h1>
+        <h1 id="page-title">Robot meets <span class="hero-title-accent">Carrom.</span></h1>
         <p class="hero-copy">
           A final project report website for an autonomous carrom-playing robotics system. Replace this paragraph with your one-sentence project pitch: what the robot senses, plans, and physically does on the board.
         </p>
@@ -983,32 +983,62 @@
       </div>
     </section>
 
+    <section class="section" id="explaination" aria-labelledby="intro-heading">
+  <div class="section-header" style="display: flex; align-items: center; gap: 40px; flex-wrap: wrap;">
+
+    <div style="flex: 1; min-width: 300px;">
+      <div>
+        <p class="kicker">00 · Carrom</p>
+        <h2 id="intro-heading">What is Carrom?</h2>
+      </div>
+      <p class="section-lede">Carrom is a tabletop game of Indian origin that is regularly described as a mix of shuffleboard and billiards.</p>
+      <p class="section-lede">Players use their fingers to strike the “Striker” piece into smaller wooden discs with the goal of knocking it into one of the corner pockets.</p>
+      <p class="section-lede">The player must strike the Striker from the baseline closest to the player. The baseline is marked on our board with two consecutive black lines.</p>
+    </div>
+    <img 
+      src="images/images.jpeg" 
+      alt="Carrom Board"
+      style="
+        width: 340px;
+        max-width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      "
+    >
+  </div>
+</section>
+
     <section class="section" id="introduction" aria-labelledby="intro-heading">
       <div class="section-header">
         <div>
           <p class="kicker">01 · Introduction</p>
           <h2 id="intro-heading">What we set out to build</h2>
         </div>
-        <p class="section-lede">This section should explain the end goal, why the problem is interesting, and where the work could be useful in real robotics applications.</p>
       </div>
       <div class="grid three">
         <article class="card">
-          <h3>End goal</h3>
-          <p>
-            <span class="todo">TODO</span> Describe your target behavior. Example: “Our goal was to build a robot that can identify a carrom board state, choose a feasible shot, align a striker, and execute the shot repeatably.”
-          </p>
+          <h3>Project's End goal</h3>
+            <ol>
+              <li>Analyze the current board state using computer vision.</li>
+              <li>Determine the optimal next move by computing the initial position and velocity of the striker.</li>
+              <li>Move the striker to the desired position and execute the strike.</li>
+              <li>Simulate the full game while maintaining and updating the game state.</li>
+            </ol>
+        </article>
+        <article class="card">
+          <h3>Project Capabilities</h3>
+            <ul>
+              <li>Uses the RealSense Camera to capture the current state of the board, including the positions of the Striker and all pieces.</li>
+              <li>Finds the most direct shot (i.e., shots that create a straight line Striker → Piece → Hole). If multiple are available, it randomly selects one.</li>
+              <li>The UR7e arm picks and places the striker on the baseline closest to its base and rotates to align for the shot.</li>
+              <li>Activates the actuator to strike the Striker.</li>
+            </ul>
         </article>
         <article class="card">
           <h3>Why it is interesting</h3>
-          <p>
-            <span class="todo">TODO</span> Explain the hard parts: noisy perception, calibration, contact dynamics, motion planning, real hardware timing, and repeatability.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Real-world relevance</h3>
-          <p>
-            <span class="todo">TODO</span> Connect the same ideas to robotic manipulation, visual servoing, warehouse sorting, tabletop assistance, game-playing robots, or precision manufacturing.
-          </p>
+            <p>Our Carrombot project is an interesting project because of its combination of perception, planning and control.</p>
+            <p>The computer vision and the homography used to analyze the board and estimate the positions and angles of shot allow the robot to map real-world piece locations.</p>
+            <p>This is interesting because of Carrombots' possible application to real-world problems.</p>
         </article>
       </div>
     </section>
