@@ -866,6 +866,7 @@
         <a href="#introduction">Intro</a>
         <a href="#design">Design</a>
         <a href="#implementation">Implementation</a>
+        <a href="#software">Software</a>
         <a href="#results">Results</a>
         <a href="#conclusion">Conclusion</a>
         <a href="#team">Team</a>
@@ -878,9 +879,9 @@
     <section class="hero" aria-labelledby="page-title">
       <div>
         <div class="eyebrow" aria-label="Project metadata">
-          <span class="pill">EECS/BioE/ME C106A/206A</span>
+          <span class="pill">EECS C106A</span>
           <span class="pill">Spring 2026</span>
-          <span class="pill">Team <span class="todo">TODO ##</span></span>
+          <span class="pill">Team 20</span></span>
         </div>
         <h1 id="page-title">Robot meets <span class="hero-title-accent">carrom.</span></h1>
         <p class="hero-copy">
@@ -1114,11 +1115,522 @@
       </div>
     </section>
 
+    <section class="section dark" id="software" aria-labelledby="software-heading">
+      <div class="section-header">
+        <div>
+          <p class="kicker">04 · Software</p>
+          <h2 id="software-heading">Breakdown of Software Pipeline</h2>
+        </div>
+        <p class="section-lede"></p>
+      </div>
+
+      <div class="grid one">
+        <article class="card">
+          <h3>Overall </h3>
+          <p>
+            Our overall software pipeline consisted of three primary subsystems:
+            <strong>vision</strong>, <strong>strategy</strong>, and
+            <strong>robot actuation</strong>. These components were coordinated through
+            a central control script, which managed the overall game flow and
+            communication between subsystems. The structure of the main control loop was
+            based on the architecture used in Lab 5.
+          </p>
+          
+          <p>
+            We organized gameplay as a sequence of turns. Each turn was handled by a
+            callback-driven state machine that scheduled tasks onto a job queue. These
+            tasks included moving the robot arm to predefined poses, running computer
+            vision pipelines, computing shot strategies, and activating the solenoid
+            striker mechanism. The callback was repeatedly invoked on a timer until the
+            game reached a terminal state.
+          </p>
+          
+          <h3>Turn Structure</h3>
+          
+          <p>A single turn consisted of five stages:</p>
+          
+          <ol>
+            <li>
+              <strong>Vision I:</strong>
+              The robot first moved to a predefined “Home” joint configuration positioned
+              high above the board, allowing the overhead camera to observe the full
+              playing area. We then executed the computer vision pipeline to detect the
+              board geometry and determine the locations of all visible game pieces.
+            </li>
+          
+            <li>
+              <strong>Strategy:</strong>
+              Using the detected board state, the strategy subsystem computed a desired
+              striker placement and shot direction. This stage determined the target
+              striker position and estimated striking velocity required to execute the
+              shot.
+            </li>
+          
+            <li>
+              <strong>Movement I (Shot Preparation):</strong>
+              The robot moved to the striker location, grasped the striker, and lifted it
+              off the board. It then transitioned to a predefined intermediate “Medium”
+              pose slightly above the playing surface to prepare for shot execution.
+            </li>
+          
+            <li>
+              <strong>Movement II (Shot Execution):</strong>
+              The robot positioned the striker at the computed target location and
+              rotated the end effector to the desired angle. The solenoid actuator was
+              pulsed to strike the striker.
+            </li>
+            <li>
+              <strong>Vision II:</strong>
+              After the shot was completed, the robot returned to the “Home” pose and
+              reran the computer vision pipeline. We used the updated board state to
+              determine which pieces had been pocketed and to update the internal game
+              state and scoring logic.
+            </li>
+          </ol>
+          
+          <h3>ROS2 Integration</h3>
+          
+          <p>
+            In addition to the primary turn loop, the main script subscribed to several
+            ROS2 topics that continuously provided state information from other
+            subsystems. These included:
+          </p>
+          
+          <ul>
+            <li>
+              The estimated striker pose, published by the depth perception node
+            </li>
+            <li>
+              The detected ArUco marker pose, published by the ArUco detection node
+            </li>
+            <li>
+              The current robot joint states, published through the ROS2 control
+              interface
+            </li>
+          </ul>
+          
+          <p>
+            Incoming ROS2 messages were processed using subscriber callback functions,
+            allowing the system to continuously maintain state information throughout
+            execution.
+          </p>
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+        </article>
+      </div>
+
+      <div class="grid one">
+        <h3>Vision</h3>
+        <article class="card">
+          <p>
+            The vision component was responsible for detecting pieces on the board and
+            computing the transformation between board and world coordinates. We used
+            classical image processing techniques to rectify the board and detect the
+            board coordinates of the striker and coins. For more precise striker
+            positioning, we implemented a second layer of striker detection using depth
+            point cloud data from the RealSense camera. Coordinate translation was
+            performed using an ArUco tag and rigid body transformations returned by TF.
+          </p>
+          
+          <h4>1. Homography</h4>
+          
+          <p>
+            The first stage of the vision pipeline consisted of rectifying the board into
+            a square image. We tested two different approaches for computing the
+            homography: an ArUco tag-based approach using a marker taped next to the
+            board, and a board-based approach using the geometry of the board itself. We
+            ultimately settled on the board-based approach, although small errors in the
+            homography computation persisted. These inaccuracies caused the computed
+            striker position to be slightly offset from its true physical location.
+          </p>
+          
+          <h5>1a. ArUco Tag–Based Homography</h5>
+          
+          <p>
+            The ArUco tag–based approach used the board’s marker to estimate the board
+            pose and compute a homography transformation. We detected the tag using
+            OpenCV’s ArUco detection pipeline, which returned the image-space coordinates
+            of the marker corners. Since the physical dimensions of both the marker and
+            the board were known beforehand, we constructed a two-step homography
+            pipeline:
+          </p>
+          
+          <ol>
+            <li>
+              Transform from the raw camera image (pixel coordinates) into a rectified
+              board representation in real-world units (centimeters)
+            </li>
+            <li>
+              Transform from the rectified centimeter-space representation into a
+              fixed-size rectified image in pixel coordinates for downstream processing
+            </li>
+          </ol>
+          
+          <p>
+            These homographies were composed into a single transformation matrix that
+            allowed detected image points to be mapped into board coordinates. This
+            method required minimal image-processing heuristics and was straightforward
+            to calibrate because the marker dimensions were known precisely. However,
+            performance depended heavily on the ArUco marker being perfectly aligned with
+            the board plane. In practice, the marker plane deviated slightly from the
+            board plane, introducing distortions into the rectified image. As a result,
+            this method was not sufficiently reliable for precise robot interaction and
+            shot execution.
+          </p>
+          
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          
+          <h5>1b. Board-Based Homography</h5>
+          
+          <p>
+            The board-based approach estimated the homography directly from the board
+            geometry using classical computer vision techniques to identify the board
+            boundaries and recover the four board corners. We first preprocessed the
+            image using bilateral filtering to reduce noise while preserving strong
+            edges. We then applied Otsu thresholding followed by binary masking to
+            isolate the board from the background.
+          </p>
+          
+          <p>
+            From the resulting mask, we extracted contours and selected a contour
+            covering at least 20% of the image area as a heuristic estimate for the
+            board boundary. After selecting the board contour, we applied the Hough Line
+            Transform to detect line segments corresponding to the board edges. Since
+            many overlapping line detections were produced, we grouped and merged lines
+            based on spatial proximity and orientation. This produced four dominant lines
+            corresponding to the board edges.
+          </p>
+          
+          <p>
+            We then computed the intersections of these four lines to estimate the board
+            corners. Using these corner points and the known board dimensions, we
+            computed a planar homography that mapped the board into a rectified top-down
+            view.
+          </p>
+          
+          <p>
+            This method did not require an external ArUco marker, making it preferable
+            for deployment in a real-world environment. However, the rectified board was
+            often slightly distorted due to imperfect line detection, noisy contour
+            extraction, and the fact that the physical board was not perfectly planar,
+            causing some corners to become partially occluded. Small homography
+            inaccuracies led to noticeable errors in board-to-world coordinate
+            conversion, resulting in significant inaccuracies in the computed positions
+            of the striker and pieces. These errors posed challenges for reliably
+            grasping the striker and calculating accurate trajectories during the
+            strategy phase.
+          </p>
+          
+          <p>
+            The thresholding pipeline was also sensitive to lighting variation and glare,
+            especially along the reflective borders of the board. To reduce reflections
+            and improve segmentation consistency, we covered the borders surrounding the
+            board with black cloth. Additionally, we placed the board on top of a
+            light-colored surface to improve contrast between the board and the
+            background, allowing the thresholding pipeline to identify the board contour
+            more reliably.
+          </p>
+          
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          
+          <h4>2. Piece Detection</h4>
+          
+          <p>
+            We detected pieces on the rectified board image using the Hough Circle
+            Transform. We used two separate hard-coded parameter ranges for the Hough
+            transform: one for the smaller coin pieces and another for the larger
+            striker. Using separate radius thresholds allowed the detector to ignore
+            unrelated circular structures on the board, such as the corner pockets and
+            printed guide circles.
+          </p>
+          
+          <p>
+            For each detected circle, we created a binary mask corresponding to the
+            interior of the circle and computed the median HSV color within the masked
+            region. We used median values instead of means to reduce sensitivity to
+            outliers caused by glare and shadows. Detected circles were then classified
+            into piece types using manually tuned HSV thresholds.
+          </p>
+          
+          <p>
+            This approach successfully detected black and yellow coins across the board
+            in most testing conditions. However, because the striker was physically
+            taller than the standard pieces, its side became visible in the rectified
+            top-down image. As a result, the striker often appeared slightly distorted
+            rather than perfectly circular, although it could still be detected reliably
+            in most cases.
+          </p>
+          
+          <p>
+            Reliable detection of red coins proved significantly more difficult because
+            they were visually similar to the cue circles printed on the board. Due to
+            this ambiguity, we ultimately excluded red coins from the system.
+          </p>
+          
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+          
+          <h4>3. Point Cloud Detection</h4>
+          
+          <p>
+            Similar to the approach used in Lab 5, we used the RealSense depth-based
+            detector to isolate the striker by filtering the point cloud within
+            manually-selected spatial bounds. Since the striker extended vertically above
+            the plane of the board, we selected a narrow range of z-values corresponding
+            to the upper portion of the striker. Additional filtering along the y-axis
+            eliminated points originating from the surrounding workspace.
+          </p>
+          
+          <p>
+            To improve robustness, we removed statistical outliers from the filtered
+            point cloud and applied DBSCAN clustering to segment the remaining points
+            into connected spatial clusters. Since the striker was expected to appear
+            near its previously detected location, we selected the cluster closest to
+            the estimated striker position. We then estimated the striker location using
+            the centroid of the cluster.
+          </p>
+          
+          <p>
+            One major challenge was temporal instability in the depth data, since points
+            near the striker edges frequently appeared and disappeared between frames.
+            This caused the estimated centroid to oscillate over time. To stabilize the
+            detection, we maintained a moving median over the previous 50 detected
+            centroids to reduce frame-to-frame jitter. Despite this filtering, the gripper would still occasionally be slightly
+            misaligned with the striker, likely due to residual point cloud inaccuracies.
+            As a result, we often had to manually reposition the striker during testing
+            to avoid damaging it.
+          </p>
+          
+          <h4>4. Board-to-World Coordinate Translation</h4>
+          
+          <p>
+            To allow the robot to interact with the physical carrom board, we converted
+            detected board coordinates into world coordinates relative to the robot base
+            frame. We performed this transformation using the ArUco marker placed
+            adjacent to the board.
+          </p>
+          
+          <p>
+            An ArUco detection node, based on Lab 7 code, continuously estimated the
+            pose of the marker relative to the camera frame using OpenCV’s ArUco pose
+            estimation pipeline. The node published the marker pose relative to the
+            camera as a ROS2 transform. Using the TF2 library, we transformed the ArUco
+            pose into the robot base frame.
+          </p>
+          
+          <p>
+            The accuracy of this transformation pipeline depended heavily on the physical
+            alignment of the ArUco tag with the board. In future iterations, we would
+            rigidly affix the tag to the board to reduce alignment error and improve the
+            accuracy of board-to-world coordinate conversion.
+          </p>
+        </article>
+      </div>
+
+      <div class="grid one">
+        <h3>Strategy and State Management</h3>
+        <article class="card">
+          <h4>State Management</h4>
+
+          <p>
+            We created <code>Board</code> and <code>Game</code> classes to represent the
+            states of the physical carrom board and the game.
+          </p>
+
+          <p>
+            The <code>Board</code> object contained the physical dimensions of the board,
+            including board dimensions, pocket locations, striker region boundaries, and
+            coin and striker radii. It also maintained the current detected positions of
+            all game pieces, which were updated after every call to the vision pipeline.
+            We used these positions for shot simulation.
+          </p>
+
+          <p>
+            The <code>Game</code> object contained the state of the game, including the
+            current score and current player. It also computed the score of a turn based
+            on which coins were sunk, and returned flags describing notable events, such
+            as the striker disappearing from view or the red coin being illegally scored.
+          </p>
+
+          <h4>Strategy</h4>
+
+          <p>
+            The overall strategy subsystem was designed to combine geometric backward
+            planning for direct shots, forward physical simulation for validating
+            candidate trajectories, and heuristic fallback methods to select effective
+            carrom shots.
+          </p>
+
+          <p>
+            To perform the required computations, we wrote a physics module that
+            implemented semi-elastic collision equations using estimated coefficients of
+            restitution, velocity decay under kinetic friction, collision geometry
+            between circular discs, and trajectory propagation under frictional forces.
+            When designing this system, we noted that:
+          </p>
+
+          <ul>
+            <li>
+              During the collision between two circular discs, momentum is only
+              transferred in the direction normal to the plane of contact, so the
+              outgoing trajectory of a struck coin depends only on the position of the
+              striker at the point of collision.
+            </li>
+
+            <li>
+              We used conservation of linear momentum and partial conservation of kinetic
+              energy, up to a factor determined by the coefficient of restitution, to
+              uniquely determine the outgoing velocities after collision. We ignored
+              factors such as friction during the collision and angular momentum.
+            </li>
+          </ul>
+
+          <p>
+            Ultimately, our strategy system only considered geometric direct shots as
+            computed by the backward planning algorithm and random shots as a fallback.
+            Although the backward algorithm produced reasonable direct-shot estimates in
+            testing scenarios, errors in board-to-world translation resulted in
+            downstream errors in the actual placement of the striker on the board.
+          </p>
+
+          <p>
+            In our final implementation, we did not finish or use the forward simulation.
+            Propagating errors would likely render the simulation results untrustworthy,
+            and our focus shifted toward completing other parts of the system.
+          </p>
+
+          <h5>1. Backward Planning Algorithm</h5>
+
+          <p>
+            The backward algorithm was the primary shot-planning strategy used by the
+            system. It worked backward from the four pockets to find direct shots for
+            nearby coins and determine the necessary striker trajectories to accomplish
+            them.
+          </p>
+
+          <p>
+            The algorithm extracted all coin pieces from the <code>Board</code> state
+            object and selected target pieces based on the game mode and score state,
+            prioritizing its assigned color in “colors” mode and higher-score pieces in
+            other modes.
+          </p>
+
+          <p>
+            For each combination of pocket and target coin, we performed a backward
+            geometric construction to determine the required striker trajectory,
+            consisting of the following steps:
+          </p>
+
+          <ol>
+            <li>
+              Computing the vector from the coin to the pocket and estimating the
+              velocity needed to overcome friction over that distance
+            </li>
+
+            <li>
+              Using semi-elastic collision equations to determine the point of collision
+              and required striker trajectory
+            </li>
+          </ol>
+
+          <p>
+            Next, we determined the physically feasible starting positions for the
+            striker. Since the striker was constrained to move along its predefined bar
+            near the edge of the board, we searched for valid x-coordinates along this
+            bar from which the striker could reach the collision point.
+          </p>
+
+          <p>We considered the following constraints:</p>
+
+          <ul>
+            <li>
+              Maximum allowable shooting angles, implemented as a hard-coded maximum
+              absolute difference of 70 degrees between the incoming striker angle and
+              outgoing coin angle
+            </li>
+
+            <li>
+              Bounds on striker placement based on the bar length
+            </li>
+          </ul>
+
+          <p>
+            We computed the feasible region as an interval along the x-axis, then
+            selected the best starting position using a simple scalar cost function. In
+            our implementation, the cost was the absolute difference between the incoming
+            striker angle and outgoing coin angle.
+          </p>
+
+          <p>
+            Future work could use a more sophisticated cost function that minimizes the
+            required striker speed and directs the striker away from the pocket after the
+            collision. Using the globally best position, we computed the required initial
+            velocity.
+          </p>
+
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+
+          <h5>2. Heuristics</h5>
+
+          <p>
+            In situations where no valid direct shot could be found, we defaulted to a
+            fallback strategy that placed the striker near the center of the starting bar
+            and aimed toward a nearby coin, slightly perturbing the angle so that the
+            coin would be deflected to a different location. This fallback ensured that
+            the robot could still execute a shot and potentially set up direct shots for
+            future turns.
+          </p>
+
+          <div class="figure-placeholder">Add a labeled hardware photo or CAD render here<br />Example: <code>&lt;img src="assets/hardware.jpg" alt="..."&gt;</code></div>
+
+          <h5>3. Forward Simulation Algorithm</h5>
+
+          <p>
+            The forward simulation component of the shot-planning system was intended to
+            predict the outcome of a candidate striker shot by simulating the physical
+            motion of all pieces on the board.
+          </p>
+
+          <p>
+            Given an initial striker position and velocity, the simulator estimated
+            trajectories and collisions to determine which pieces would ultimately be
+            sunk. Our long-term intention was to integrate this simulator into a
+            search-based planning framework.
+          </p>
+
+          <p>
+            Candidate striker initial conditions would be generated through a grid search
+            over possible striker positions and shot velocities. Each candidate shot
+            would then be evaluated by running the forward simulation and scoring the
+            resulting board state.
+          </p>
+
+          <p>
+            We used an event-driven approach that maintained estimates for the next
+            possible physical events, including piece-piece collisions, wall bounces, and
+            pocket captures, rather than iterating over fixed timesteps.
+          </p>
+
+          <p>
+            The simulation then advanced directly to the earliest event, updated the
+            physical state of the affected pieces, and recomputed only the future events
+            involving those affected pieces. After determining collision events, we
+            applied semi-elastic collision equations to compute post-collision
+            velocities.
+          </p>
+
+          <p>
+            Ultimately, we did not integrate this algorithm into the final autonomous
+            strategy pipeline. However, in the future, this could be an avenue worth
+            exploring for more sophisticated shot planning.
+          </p>
+        </article>
+      </div>
+
+
     <section class="section" id="results" aria-labelledby="results-heading">
       <div class="section-header">
         <div>
           <p class="kicker">04 · Results</p>
-          <h2 id="results-heading">What worked</h2>
+          <h2 id="results-heading">Results</h2>
         </div>
         <p class="section-lede">Show how well the project worked, what tasks it performed, and include pictures plus at least one video.</p>
       </div>
@@ -1209,13 +1721,13 @@
         </div>
         <p class="section-lede">Include names, short bios, and the major contributions of each member.</p>
       </div>
-      <div class="grid three">
+      <div class="grid two">
         <article class="card team-card">
           <div class="avatar">A</div>
           <div>
-            <h3>Team Member A</h3>
-            <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
-            <p><strong>Contributions:</strong> perception pipeline, calibration, results analysis.</p>
+            <h3>Arijit Ghoshal</h3>
+            <p>I'm a fourth-year math and computer science double major.</p>
+            <p><strong>Contributions:</strong> Software pipeline, including homography methods, Hough circles-based piece identification, physics methods and strategy, structuring of, software and results components of report</p>
           </div>
         </article>
         <article class="card team-card">
@@ -1226,12 +1738,22 @@
             <p><strong>Contributions:</strong> robot planning, motion control, demo integration.</p>
           </div>
         </article>
+      </div>
+      <div class="grid two">
         <article class="card team-card">
-          <div class="avatar">C</div>
+          <div class="avatar">A</div>
           <div>
-            <h3>Team Member C</h3>
+            <h3>Someone</h3>
+            <p></p>
+            <p><strong>Contributions:</strong></p>
+          </div>
+        </article>
+        <article class="card team-card">
+          <div class="avatar">B</div>
+          <div>
+            <h3>Team Member B</h3>
             <p><span class="todo">TODO</span> Short bio: major, interests, role on the team.</p>
-            <p><strong>Contributions:</strong> hardware design, CAD, documentation, video.</p>
+            <p><strong>Contributions:</strong> robot planning, motion control, demo integration.</p>
           </div>
         </article>
       </div>
