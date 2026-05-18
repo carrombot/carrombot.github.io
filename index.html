@@ -733,6 +733,24 @@
       border: 3px solid rgba(255,255,255,0.7);
     }
 
+
+    .avatar2 {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      overflow: hidden;           /* clips the image to the circle */
+      border: 3px solid rgba(255,255,255,0.7);
+      /* remove the background, display:grid, place-items, color, font-weight, letter-spacing */
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;          /* fills the circle without stretching */
+      object-position: center;   /* centers the crop — adjust if needed */
+      display: block;
+    }
+
     .timeline {
       counter-reset: step;
       list-style: none;
@@ -1900,11 +1918,11 @@
       </div>
       <div class="grid two">
         <article class="card team-card">
-          <div class="avatar">A</div>
+          <div class="avatar2"> <img src="images/arijit.jpg" alt="Arijit Ghoshal" /> </div>
           <div>
             <h3>Arijit Ghoshal</h3>
-            <p>I'm a fourth-year Math and Computer Science double major.</p>
-            <p><strong>Contributions:</strong> Software pipeline, including homography methods, Hough circles-based piece identification, physics methods and strategy, structuring of software and results components of report</p>
+            <p>I'm a fourth-year math and computer science double major who loves the outdoors and science fiction.</p>
+            <p><strong>Contributions:</strong> Software pipeline (including homography methods and Hough circles-based piece identification), physics and strategy methods, board and game state design, main callback function and robot movement jobs, modifications to point cloud detection, software and results components of report.</p>
           </div>
         </article>
         <article class="card team-card">
